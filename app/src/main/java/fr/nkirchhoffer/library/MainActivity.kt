@@ -2,27 +2,37 @@ package fr.nkirchhoffer.library
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
-    val books = ArrayList<Book>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setData()
-
-        val recyclerView = findViewById<RecyclerView>(R.id.bookList)
-        recyclerView.adapter = ListAdapter(books)
-        recyclerView.layoutManager = GridLayoutManager(this, 2)
+        getBooks()
     }
 
-    fun setData() {
-        books.add(Book("dlsdls", "oui", 30, "https://sss", "oui"))
-        books.add(Book("dlsdls", "non", 30, "https://sss", "oui"))
-        books.add(Book("dlsdls", "peut-être", 30, "https://sss", "oui"))
-        books.add(Book("dlsdls", "nan", 30, "https://sss", "oui"))
+    fun getBooks() {
+        var bookService = HenriPotierService()
+        bookService.getApi().listBooks().enqueue(object : Callback<List<Book>> {
+            override fun onResponse(call: Call<List<Book>>, response: Response<List<Book>>) {
+                var books: List<Book>? = response.body()
+                println("SIZE : " + books?.size);
+                val recyclerView = findViewById<RecyclerView>(R.id.bookList)
+                recyclerView.adapter = books?.let { ListAdapter(it) }
+                recyclerView.layoutManager = GridLayoutManager(applicationContext, resources.getInteger(R.integer.cols))
+            }
+
+            override fun onFailure(call: Call<List<Book>>, t: Throwable) {
+                System.err.println(t.message)
+            }
+
+        })
     }
 }
