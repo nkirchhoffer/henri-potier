@@ -1,5 +1,6 @@
 package fr.nkirchhoffer.library
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.squareup.picasso.Picasso
 
 
@@ -39,6 +42,13 @@ class BookActivity : AppCompatActivity() {
 
         price.text = book?.price.toString() + "€"
 
+        val color = if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            ContextCompat.getColor(this, R.color.white)
+        } else {
+            ContextCompat.getColor(this, R.color.black)
+        }
+        price.setTextColor(color)
+
         cartButton.setOnClickListener{
             val cart = CartPreferences(this)
             book?.let{
@@ -59,7 +69,8 @@ class BookActivity : AppCompatActivity() {
                 true
             }
             R.id.action_cart -> {
-                Toast.makeText(this,"oui", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, CartActivity::class.java)
+                startActivity( intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

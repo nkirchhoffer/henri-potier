@@ -20,6 +20,16 @@ class CartPreferences(context: Context) {
         editor.apply()
     }
 
+    fun removeFromCart(book: Book) {
+        val editor = sharedPreferences.edit()
+        val cart = getCart()
+        cart.remove(book)
+
+        val json = gson.toJson(cart)
+        editor.putString("cart", json)
+        editor.apply()
+    }
+
     // Récupérer la liste de produits
     fun getCart(): ArrayList<Book> {
         val json = sharedPreferences.getString("cart", null)
